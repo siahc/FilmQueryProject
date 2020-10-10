@@ -34,8 +34,10 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 	public Film findFilmById(int filmId) {
 		Film film = null;
 		try {
+			// joined language table on ID so query returns String
 			String sql = "SELECT * \n"
 					+ "FROM film \n"
+					+ "INNER JOIN language ON film.language_id = language.id \n" 
 					+ "WHERE film.id = ?";
 			PreparedStatement stmt = this.conn.prepareStatement(sql);
 			stmt.setInt(1, filmId);
@@ -46,7 +48,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				String title = filmResult.getString(2);
 				String desc = filmResult.getString(3);
 				int rYear = filmResult.getInt(4);
-				int lID = filmResult.getInt(5);
+				String lang = filmResult.getString("language.name");
 			 	int rd = filmResult.getInt(7);
 				Double rr = filmResult.getDouble(6);
 				int length = filmResult.getInt(8);
@@ -66,7 +68,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				film.setTitle(title);
 				film.setDescription(desc);
 				film.setReleaseYear(rYear);
-				film.setLanguageId(lID);
+				film.setLanguage(lang);
 				film.setRentalDuration(rd);
 				film.setRentalRate(rr);
 				film.setLength(length);
@@ -143,6 +145,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 		try {
 			String sql = "SELECT * \n"
 					+ "FROM film \n"
+					+ "INNER JOIN language ON film.language_id = language.id \n" 
 					// Searches films titles allowing for titles and descriptions
 					+ "WHERE film.title LIKE ? \n"
 					+ "OR film.description LIKE ? \n"
@@ -160,7 +163,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				String title = filmResult.getString(2);
 				String desc = filmResult.getString(3);
 				int rYear = filmResult.getInt(4);
-				int lID = filmResult.getInt(5);
+				String lang = filmResult.getString("language.name");
 			 	int rd = filmResult.getInt(7);
 				Double rr = filmResult.getDouble(6);
 				int length = filmResult.getInt(8);
@@ -180,14 +183,16 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				film.setTitle(title);
 				film.setDescription(desc);
 				film.setReleaseYear(rYear);
-				film.setLanguageId(lID);
+				film.setLanguage(lang);
 				film.setRentalDuration(rd);
 				film.setRentalRate(rr);
 				film.setLength(length);
 				film.setReplacementCost(repC);
 				film.setRating(rating);
 				film.setSpecialFeatures(special_features);
-				film.setActors(actorList);		
+				film.setActors(actorList);
+				
+				filmList.add(film);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -37,14 +37,6 @@ public class Film {
 		this.releaseYear = releaseYear;
 	}
 
-	public Integer getLanguageId() {
-		return languageId;
-	}
-
-	public void setLanguageId(Integer languageId) {
-		this.languageId = languageId;
-	}
-
 	public Integer getRentalDuration() {
 		return rentalDuration;
 	}
@@ -59,6 +51,14 @@ public class Film {
 
 	public void setRentalRate(Double rentalRate) {
 		this.rentalRate = rentalRate;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	public Integer getLength() {
@@ -108,7 +108,7 @@ public class Film {
 		result = prime * result + ((actors == null) ? 0 : actors.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((languageId == null) ? 0 : languageId.hashCode());
+		result = prime * result + ((language == null) ? 0 : language.hashCode());
 		result = prime * result + ((length == null) ? 0 : length.hashCode());
 		result = prime * result + ((rating == null) ? 0 : rating.hashCode());
 		result = prime * result + ((releaseYear == null) ? 0 : releaseYear.hashCode());
@@ -141,10 +141,10 @@ public class Film {
 			return false;
 		if (id != other.id)
 			return false;
-		if (languageId == null) {
-			if (other.languageId != null)
+		if (language == null) {
+			if (other.language != null)
 				return false;
-		} else if (!languageId.equals(other.languageId))
+		} else if (!language.equals(other.language))
 			return false;
 		if (length == null) {
 			if (other.length != null)
@@ -189,7 +189,7 @@ public class Film {
 	@Override
 	public String toString() {
 		return "Film [id=" + id + ", title=" + title + ", description=" + description + ", releaseYear=" + releaseYear
-				+ ", languageId=" + languageId + ", rentalDuration=" + rentalDuration + ", rentalRate=" + rentalRate
+				+ ", language=" + language + ", rentalDuration=" + rentalDuration + ", rentalRate=" + rentalRate
 				+ ", length=" + length + ", replacementCost=" + replacementCost + ", rating=" + rating
 				+ ", specialFeatures=" + Arrays.toString(specialFeatures) + ", actors=" + actors + "]";
 	}
@@ -199,7 +199,7 @@ public class Film {
 	private String title;
 	private String description;
 	private Integer releaseYear;
-	private Integer languageId;
+	private String language;
 	private Integer rentalDuration;
 	private Double rentalRate;
 	private Integer length;
@@ -207,22 +207,23 @@ public class Film {
 	private String rating;
 	private String[] specialFeatures;
 	private List<Actor> actors;
-
-	public Film(int id, String title, String description, Integer releaseYear, Integer languageId,
-			Integer rentalDuration, Double rentalRate, Integer length, Double replacementCost, String rating,
-			String[] specialFeatures) {
+	
+	public Film(int id, String title, String description, Integer releaseYear, String language, Integer rentalDuration,
+			Double rentalRate, Integer length, Double replacementCost, String rating, String[] specialFeatures,
+			List<Actor> actors) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.releaseYear = releaseYear;
-		this.languageId = languageId;
+		this.language = language;
 		this.rentalDuration = rentalDuration;
 		this.rentalRate = rentalRate;
 		this.length = length;
 		this.replacementCost = replacementCost;
 		this.rating = rating;
 		this.specialFeatures = specialFeatures;
+		this.actors = actors;
 	}
 
 	public Film() {
