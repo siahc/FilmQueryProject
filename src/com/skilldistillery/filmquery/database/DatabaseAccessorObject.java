@@ -14,17 +14,33 @@ import com.skilldistillery.filmquery.entities.Film;
 public class DatabaseAccessorObject implements DatabaseAccessor {
 	
 	private Connection conn;
+
+	private String url;
+	private String user;
+	private String pass;
 	
 	public DatabaseAccessorObject() {
-		String url = "jdbc:mysql://localhost:3306/sdvid";
-		String user = "student";
-		String pass = "student";
+		url = "jdbc:mysql://localhost:3306/sdvid";
+		user = "student";
+		pass = "student";
 		
 		// when constructing a DB Accessor, let's already create one connection
 		// all of our methods can use this.conn (connection) to access the db without
 		// recreating it every single time
+		ensureConnection();
+	}
+	
+	private void ensureConnection() {
 		try {
 			this.conn = DriverManager.getConnection(url, user, pass);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void close() {
+		try {
+			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -61,25 +77,12 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 				// let's also query for all of the Actors for this film:
 				List<Actor> actorList = findActorsByFilmId(id);
 				
-				
-				film = new Film(); // Create the object
-				
-				film.setId(id);
-				film.setTitle(title);
-				film.setDescription(desc);
-				film.setReleaseYear(rYear);
-				film.setLanguage(lang);
-				film.setRentalDuration(rd);
-				film.setRentalRate(rr);
-				film.setLength(length);
-				film.setReplacementCost(repC);
-				film.setRating(rating);
-				film.setSpecialFeatures(special_features);
-				film.setActors(actorList);
-				
+				// Create the object
+				film = new Film(id, title, desc, rYear, lang, rd, rr, length, repC, rating, special_features, actorList);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			ensureConnection();
 			e.printStackTrace();
 		}	
 		// ...
@@ -106,6 +109,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			ensureConnection();
 			e.printStackTrace();
 		}	
 		// ...
@@ -113,7 +117,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 	}
 
 	@Override
-	public List<Actor> findActorsByFilmId(int filmId) {
+	public List<Actor> findActorsByFilmId(int actorID) {
 		List<Actor> actorList = new ArrayList<Actor>();
 		try {
 			String sql = "SELECT DISTINCT actor.id, actor.first_name, actor.last_name \n"
@@ -121,19 +125,20 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 					+ "INNER JOIN actor ON film_actor.actor_id = actor.id \n"
 					+ "WHERE film_actor.film_id = ? \n";
 			PreparedStatement stmt = this.conn.prepareStatement(sql);
-			stmt.setInt(1, filmId);
-			ResultSet filmResult = stmt.executeQuery();
+			stmt.setInt(1, actorID);
+			ResultSet actorResult = stmt.executeQuery();
 			
-			while (filmResult.next()) {
+			while (actorResult.next()) {
 				// Here is our mapping of query columns to our object fields:
-				int id = filmResult.getInt(1);
-				String fName = filmResult.getString(2);
-				String lName = filmResult.getString(3);
+				int id = actorResult.getInt(1);
+				String fName = actorResult.getString(2);
+				String lName = actorResult.getString(3);
 				
 				actorList.add( new Actor(id, fName, lName) );
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			ensureConnection();
 			e.printStackTrace();
 		}	
 		// ...
@@ -154,7 +159,6 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			PreparedStatement stmt = this.conn.prepareStatement(sql);
 			stmt.setString(1, "%" + keyword + "%");
 			stmt.setString(2, "%" + keyword + "%");
-			System.out.println(stmt);
 			ResultSet filmResult = stmt.executeQuery();
 			
 			while (filmResult.next()) {
@@ -196,6 +200,7 @@ public class DatabaseAccessorObject implements DatabaseAccessor {
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			ensureConnection();
 			e.printStackTrace();
 		}	
 		// ...

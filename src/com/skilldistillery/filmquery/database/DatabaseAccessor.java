@@ -10,4 +10,5 @@ public interface DatabaseAccessor {
   public Actor findActorById(int actorId);
   public List<Actor> findActorsByFilmId(int filmId);
   public List<Film> searchFilms(String keyword);
+  public void close();
 }
